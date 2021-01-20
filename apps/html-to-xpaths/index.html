@@ -1,1 +1,135 @@
-hello world
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Online HTML to Xpaths Coverter</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Fetch HTML from a URL and convert to xpaths">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h1 class="text-center" style="">Online HTML to Xpaths Coverter</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <label>Enter URL to fetch and convert HTML to Xpaths</label>
+          <div class="input-group">
+            <input id="url" type="text" class="form-control form-control-lg" placeholder="https://www.example.com" required="">
+            <div class="input-group-append">
+              <button id="convert" onclick="convert(document.getElementById('url').value)" class="btn btn-primary float-right btn-lg" type="button">Convert</button>
+            </div>
+          </div>
+          <div id="feedback"></div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous" style=""></script>
+  </div>
+  <div class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="exampleFormControlSelect2">Xpaths</label>
+            <select multiple="" class="form-control w-100 h-100" size="20" id="item-list">
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 mt-3 text-center">
+          <p class="love">Made with <span style="color: #e25555;">&#9829;</span></i> by <a href="https://www.yasith.me/">
+              Yasith Lokuge
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function convert(url) {
+      if (url !== null && url !== '') {
+        if (validURL(url)) {
+          $('#convert').prop("disabled", true);
+          $('#convert').html(`<span class="spinner-grow spinner-grow-sm text-light" role="status"></span> Converting ...`);
+          $.ajax({
+            type: 'GET',
+            url: 'https://byv0inmls8.execute-api.us-east-1.amazonaws.com/dev/xpaths?url=' + url,
+            dataType: 'json',
+            success: function(data) {
+              var nHTML = '';
+              $.each(data, function(index, element) {
+                nHTML += '<option value="' + index + '">' + element + '</option>';
+              });
+              $("#item-list").html(nHTML);
+              $("#feedback").html("");
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              $("#feedback").removeClass("d-none");
+              $("#feedback").addClass("text-danger");
+              $("#feedback").html("Error occured while proccessing the request.");
+            },
+            complete: function(data) {
+              $('#convert').prop("disabled", false);
+              $('#convert').find("span").remove();
+              $('#convert').html("Convert");
+            }
+          });
+        }
+      }
+    }
+
+    function validURL(str) {
+      var pattern = new RegExp('^(https?:\\/\\/)' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+      return !!pattern.test(str);
+    }
+    $("#url").on("input propertychange", function() {
+      if (validURL($('#url').val())) {
+        $("#convert").addClass("enabled");
+        $("#url").addClass("is-valid");
+        $("#feedback").addClass("d-none");
+        $("#convert").removeClass("disabled");
+        $("#url").removeClass("is-invalid");
+        $("#feedback").removeClass("text-danger");
+      } else {
+        $("#convert").removeClass("enabled");
+        $("#url").removeClass("is-valid");
+        $("#feedback").removeClass("d-none");
+        $("#convert").addClass("disabled");
+        $("#url").addClass("is-invalid");
+        $("#feedback").addClass("text-danger");
+        $("#feedback").html("Invalid URL");
+      }
+    });
+    $("#url").keyup(function(event) {
+      if (event.keyCode === 13) {
+        $("#convert").click();
+      }
+    });
+  </script>
+</body>
+
+</html>
