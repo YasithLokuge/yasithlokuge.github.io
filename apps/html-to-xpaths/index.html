@@ -56,8 +56,8 @@
         <div class="col-md-12">
           <div class="form-group">
             <label for="exampleFormControlSelect2">Xpaths</label>
-            <select multiple="" class="form-control w-100 h-100" size="20" id="item-list">
-            </select>
+            <textarea class="form-control w-100 h-100" rows="20" id="item-list" readonly>
+            </textarea>
           </div>
         </div>
       </div>
@@ -76,12 +76,6 @@
     </div>
   </div>
   <script>
-
-      grecaptcha.ready(function() {
-      grecaptcha.execute('6LfkZTQaAAAAAAe_oULudxXnK1AqYgsNrhNsxi0l', {action: 'submit'}).then(function(token) {
-          // Add your logic to submit to your backend server here.
-      });
-    });
     function convert(url) {
       if (url !== null && url !== '') {
         if (validURL(url)) {
@@ -97,7 +91,7 @@
                 success: function(data) {
                   var nHTML = '';
                   $.each(data, function(index, element) {
-                    nHTML += '<option value="' + index + '">' + element + '</option>';
+                    nHTML += element + '\n';
                   });
                   $("#item-list").html(nHTML);
                   $("#feedback").html("");
